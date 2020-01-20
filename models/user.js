@@ -10,9 +10,16 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = function(models) {
+    // User has many spending categories
     User.hasMany(models.SpendingCategory, {
       foreignKey: 'userId',
       as: 'spending_categories'
+    });
+
+    // User has many income sources
+    User.hasMany(models.IncomeSource, {
+      foreignKey: 'userId',
+      as: 'income_sources'
     });
   };
 
