@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'income_sources'
     });
+
+    // User has many wallets
+    User.hasMany(models.Wallet, {
+      foreignKey: 'userId',
+      as: 'wallets'
+    });
   };
 
   return User;
