@@ -5,8 +5,13 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'spending_categories'
   });
+
   SpendingCategory.associate = function(models) {
-    // associations can be defined here
+    SpendingCategory.belongsTo(models.User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    })
   };
+
   return SpendingCategory;
 };
