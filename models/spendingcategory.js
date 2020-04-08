@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
   SpendingCategory.associate = function(models) {
     SpendingCategory.belongsTo(models.User, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      as: 'user'
     })
   };
 

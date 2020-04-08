@@ -9,7 +9,8 @@ module.exports = (sequelize, DataTypes) => {
   IncomeSource.associate = function(models) {
     IncomeSource.belongsTo(models.User, {
        foreignKey: 'userId',
-       onDelete: 'CASCADE'
+       onDelete: 'CASCADE',
+       as: 'user'
      })
   };
 
