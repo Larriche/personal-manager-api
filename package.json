@@ -4,7 +4,8 @@
   "description": "REST API for a personal assistant app",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "nodemon app.js"
   },
   "author": "Richman Larry Clifford",
   "license": "ISC",
@@ -14,5 +15,8 @@
     "express": "^4.17.1",
     "mysql2": "^2.1.0",
     "sequelize": "^5.21.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
   }
 }
