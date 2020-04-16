@@ -1,33 +1,53 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
+
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING
-  }, {
-    tableName: 'users'
-  });
+    const User = sequelize.define('User', {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true
+        },
 
-  User.associate = function(models) {
-    // User has many spending categories
-    User.hasMany(models.SpendingCategory, {
-      foreignKey: 'userId',
-      as: 'spending_categories'
+        name: DataTypes.STRING,
+        email: DataTypes.STRING,
+        password: DataTypes.STRING
+    }, {
+        tableName: 'users',
+
+        hooks: {
+            beforeCreate: (user) => {
+                const salt = bcrypt.genSaltSync();
+                user.password = bcrypt.hashSync(user.password, salt);
+            }
+        },
+
+        instanceMethods: {
+            validPassword: function (password) {
+                return bcrypt.compareSync(password, this.password);
+            }
+        }
     });
 
-    // User has many income sources
-    User.hasMany(models.IncomeSource, {
-      foreignKey: 'userId',
-      as: 'income_sources'
-    });
+    User.associate = function(models) {
+        // User has many spending categories
+        User.hasMany(models.SpendingCategory, {
+            foreignKey: 'userId',
+            as: 'spending_categories'
+        });
 
-    // User has many wallets
-    User.hasMany(models.Wallet, {
-      foreignKey: 'userId',
-      as: 'wallets'
-    });
-  };
+        // User has many income sources
+        User.hasMany(models.IncomeSource, {
+            foreignKey: 'userId',
+            as: 'income_sources'
+        });
 
-  return User;
+        // User has many wallets
+        User.hasMany(models.Wallet, {
+            foreignKey: 'userId',
+            as: 'wallets'
+        });
+    };
+
+    return User;
 };

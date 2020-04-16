@@ -1,10 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const expenses = sequelize.define('Expense', {
+  const Expense = sequelize.define('Expense', {
     amount: DataTypes.DECIMAL
   }, {tableName: 'expenses'});
 
-  expenses.associate = function(models) {
+  Expense.associate = function(models) {
     Expense.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
@@ -24,5 +24,5 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  return expenses;
+  return Expense;
 };
