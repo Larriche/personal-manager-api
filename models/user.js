@@ -20,12 +20,6 @@ module.exports = (sequelize, DataTypes) => {
                 const salt = bcrypt.genSaltSync();
                 user.password = bcrypt.hashSync(user.password, salt);
             }
-        },
-
-        instanceMethods: {
-            validPassword: function (password) {
-                return bcrypt.compareSync(password, this.password);
-            }
         }
     });
 
@@ -48,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
             as: 'wallets'
         });
     };
+
+    User.prototype.validPassword = function (password) {
+        return bcrypt.compareSync(password, this.password);
+    }
 
     return User;
 };
