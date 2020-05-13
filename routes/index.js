@@ -5,10 +5,15 @@ const router = express.Router();
 const middlewares = require('../middlewares');
 
 const auth = require('../controllers/auth');
+const wallets = require('../controllers/wallets');
 
 function routes(router) {
     router.post('/auth/register', auth.register);
     router.post('/auth/login', auth.login);
+
+    // Wallets routes
+    router.get('/wallets', wallets.index);
+    router.post('/wallets', wallets.store);
 }
 
 const setupRouter = function (app) {

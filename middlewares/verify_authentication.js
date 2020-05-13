@@ -1,3 +1,4 @@
+const dotenv = require('dotenv').config();
 const config = process.env;
 const jwt = require('jsonwebtoken');
 const secret = config.JWT_SECRET.toString().trim();
@@ -13,6 +14,7 @@ const verifyAuthentication = function (request, response, next) {
     if (!token) return response.status(401).json({ auth: false, message: 'No token provided.' });
 
     jwt.verify(token, secret, function (err, decoded) {
+        console.log(err);
         if (err) return response.status(401).json({ auth: false, message: 'Failed to authenticate token.' });
 
         request.user = {
