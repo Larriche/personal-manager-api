@@ -10,7 +10,7 @@ const Utilities = {
      */
     getPaginationParams(requestData) {
         let pagination = {
-            skip: 0,
+            offset: 0,
             limit: 0
         };
 
@@ -21,7 +21,7 @@ const Utilities = {
             pagination.limit = perPage;
 
             if (requestData.hasOwnProperty('page')) {
-                pagination.skip = (page - 1) * perPage;
+                pagination.offset = (page - 1) * perPage;
             }
         }
 

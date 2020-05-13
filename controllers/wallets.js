@@ -16,8 +16,38 @@ const wallets = {
      */
     async index(request, response, next) {
         let pagination = Utilities.getPaginationParams(request.query);
+        let paginate = request.query.hasOwnProperty('per_page');
+        let orderBy = request.query.hasOwnProperty('order_field') ? request.query.order_field : 'name';
+        let ranking = request.query.hasOwnProperty('ranking') ? request.query.ranking : 'ASC';
 
-        return response.status(200).json('Hello world');
+        let query = {
+            where: {
+                userId: {
+                    [Op.eq]: request.user.id
+                }
+            },
+            order: [
+                [orderBy, ranking]
+            ]
+        };
+
+        if (paginate) {
+            query = {
+                ...query,
+                ...pagination
+            }
+        }
+
+        let wallets = await Wallet.findAll(query);
+
+        let responseData = wallets;
+        let total = await Wallet.count();
+
+        if (paginate) {
+            responseData = Utilities.setPaginationFields(request, { data: wallets }, total);
+        }
+
+        return response.status(200).json(responseData);
     },
 
     /**
