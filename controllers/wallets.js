@@ -97,6 +97,39 @@ const wallets = {
             error.status = 500;
             next(error);
         }
+    },
+
+    /**
+     * Find a wallet by id and return it
+     *
+     * @param {Object} request HTTP request object
+     * @param {Object} response  HTTP response object
+     * @param {*} next Next callable in chain
+     */
+    async show(request, response, next) {
+        try {
+            let wallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: [
+                        {
+                            id: request.params.id,
+                            userId: request.user.id
+                        }
+                    ]
+                }
+            });
+
+            if (!wallet) {
+                return response.status(404).json({
+                    message: 'Wallet was not found',
+                })
+            }
+
+            return response.status(200).json(wallet);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
     }
 };
 
