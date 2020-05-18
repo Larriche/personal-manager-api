@@ -92,7 +92,7 @@ const wallets = {
 
             let responseBody = wallet;
 
-            return response.status(200).json(responseBody);
+            return response.status(201).json(responseBody);
         } catch (error) {
             error.status = 500;
             next(error);
