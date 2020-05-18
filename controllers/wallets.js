@@ -184,6 +184,32 @@ const wallets = {
             error.status = 500;
             next(error);
         }
+    },
+
+    async delete(request, response, next) {
+        try {
+            let wallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!wallet) {
+                return response.status(404).json({
+                    message: "Wallet was not found in user's wallets"
+                });
+            }
+
+            await wallet.destroy();
+
+            return response.status(200).json({});
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
     }
 };
 
