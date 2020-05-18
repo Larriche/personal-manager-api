@@ -130,6 +130,60 @@ const wallets = {
             error.status = 500;
             next(error);
         }
+    },
+
+    /**
+     * Update a wallet with new data
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next Next callable in chain
+     */
+    async update(request, response, next) {
+        let validator = new Validator(request.body, {
+            name: 'required'
+        });
+
+        if (!validator.passes()) {
+            return response.status(422).json({
+                errors: validator.errors.all()
+            })
+        }
+
+        try {
+            let wallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: [
+                        {
+                            id: request.params.id,
+                            userId: request.user.id
+                        }
+                    ]
+                }
+            });
+
+            if (!wallet) {
+                return response.status(404).json({
+                    message: "Wallet was not found in user's wallets"
+                })
+            }
+
+            await Wallet.update({
+                name: request.body.name,
+                userId: request.user.id,
+            },{
+                where: {
+                    id: request.params.id
+                }
+            });
+
+            wallet = await wallet.reload();
+
+            return response.status(200).json(wallet);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
     }
 };
 

@@ -15,6 +15,7 @@ function routes(router) {
     router.get('/wallets', wallets.index);
     router.post('/wallets', wallets.store);
     router.get('/wallets/:id', wallets.show);
+    router.put('/wallets/:id', wallets.update);
 }
 
 const setupRouter = function (app) {
