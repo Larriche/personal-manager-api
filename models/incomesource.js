@@ -1,18 +1,19 @@
 'use strict';
+
 module.exports = (sequelize, DataTypes) => {
-  const IncomeSource = sequelize.define('IncomeSource', {
-    name: DataTypes.STRING
-  }, {
-    tableName: 'income_sources'
-  });
+    const IncomeSource = sequelize.define('IncomeSource', {
+        name: DataTypes.STRING
+    }, {
+        tableName: 'income_sources'
+    });
 
-  IncomeSource.associate = function(models) {
-    IncomeSource.belongsTo(models.User, {
-       foreignKey: 'userId',
-       onDelete: 'CASCADE',
-       as: 'user'
-     })
-  };
+    IncomeSource.associate = function(models) {
+        IncomeSource.belongsTo(models.User, {
+            foreignKey: 'userId',
+            onDelete: 'CASCADE',
+            as: 'user'
+        })
+    };
 
-  return IncomeSource;
+    return IncomeSource;
 };

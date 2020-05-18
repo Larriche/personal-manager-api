@@ -6,6 +6,7 @@ const middlewares = require('../middlewares');
 
 const auth = require('../controllers/auth');
 const wallets = require('../controllers/wallets');
+const income_sources = require('../controllers/income_sources');
 
 function routes(router) {
     router.post('/auth/register', auth.register);
@@ -17,6 +18,9 @@ function routes(router) {
     router.get('/wallets/:id', wallets.show);
     router.put('/wallets/:id', wallets.update);
     router.delete('/wallets/:id', wallets.delete);
+
+    // Income sources routes
+    router.get('/income_sources', income_sources.index);
 }
 
 const setupRouter = function (app) {
