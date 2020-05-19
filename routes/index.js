@@ -21,6 +21,7 @@ function routes(router) {
 
     // Income sources routes
     router.get('/income_sources', income_sources.index);
+    router.post('/income_sources', income_sources.store);
 }
 
 const setupRouter = function (app) {

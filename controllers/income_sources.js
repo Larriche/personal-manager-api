@@ -7,6 +7,13 @@ const services = require('../services');
 const Utilities = services.Utilities;
 
 const incomeSources = {
+    /**
+     * Get a listing of income sources
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable in the chain
+     */
     async index(request, response, next) {
         let pagination = Utilities.getPaginationParams(request.query);
         let paginate = request.query.hasOwnProperty('per_page');
@@ -43,6 +50,51 @@ const incomeSources = {
         }
 
         return response.status(200).json(responseData);
+    },
+
+    /**
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async store(request, response, next) {
+        let validator = new Validator(request.body, {
+            name: 'required'
+        });
+
+        if (!validator.passes()) {
+            return response.status(422).json({
+                errors: validator.errors.all()
+            })
+        }
+
+        try {
+            let existingSource = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: [{
+                        name: request.body.name,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (existingSource) {
+                return response.status(422).json({
+                    name: 'This income source has already been added'
+                });
+            }
+
+            let source = await IncomeSource.create({
+                name: request.body.name,
+                userId: request.user.id
+            });
+
+            return response.status(200).json(source);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
     }
 }
 

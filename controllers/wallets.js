@@ -71,16 +71,17 @@ const wallets = {
         try {
             let existingWallet = await Wallet.findOne({
                 where: {
-                    name: {
-                        [Op.eq]: request.body.name
-                    }
+                    [Op.and]: [{
+                        name: request.body.name,
+                        userId: request.user.id
+                    }]
                 }
             });
 
             if (existingWallet) {
                 return response.status(422).json({
                     errors: {
-                        email: 'This wallet already exists'
+                        wallet: 'This wallet already exists'
                     }
                 });
             }
