@@ -99,6 +99,37 @@ const incomeSources = {
     },
 
     /**
+     * Find and return an income source by id
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async show(request, response, next) {
+        try {
+            let source = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!source) {
+                return response.status(404).json({
+                    message: "This income source was not found in the user's income sources."
+                })
+            }
+
+            return response.status(200).json(source);
+        } catch (error) {
+            error.status = 500;
+            return next(error);
+        }
+    },
+
+    /**
      * Update an income source
      *
      * @param {Object} request The HTTP request

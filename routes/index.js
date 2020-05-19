@@ -22,6 +22,7 @@ function routes(router) {
     // Income sources routes
     router.get('/income_sources', income_sources.index);
     router.post('/income_sources', income_sources.store);
+    router.get('/income_sources/:id', income_sources.show);
     router.put('/income_sources/:id', income_sources.update);
     router.delete('/income_sources/:id', income_sources.delete);
 }
