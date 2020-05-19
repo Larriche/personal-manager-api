@@ -165,6 +165,39 @@ const incomeSources = {
             error.status = 500;
             next(error);
         }
+    },
+
+    /**
+     * Delete an income source
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async delete(request, response, next) {
+        try {
+            let incomeSource = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!incomeSource) {
+                return response.status(404).json({
+                    message: "This income source does not exist among user's wallet"
+                })
+            }
+
+            await incomeSource.destroy();
+
+            return response.status(200).json({});
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
     }
 }
 
