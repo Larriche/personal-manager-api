@@ -53,6 +53,7 @@ const incomeSources = {
     },
 
     /**
+     * Add an income source
      *
      * @param {Object} request The HTTP request
      * @param {Object} response The HTTP response
@@ -89,6 +90,75 @@ const incomeSources = {
                 name: request.body.name,
                 userId: request.user.id
             });
+
+            return response.status(200).json(source);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
+    },
+
+    /**
+     * Update an income source
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async update(request, response, next) {
+        let validator = new Validator(request.body, {
+            name: 'required'
+        });
+
+        if (!validator.passes()) {
+            return response.status(422).json({
+                errors: validator.errors.all()
+            });
+        }
+
+        try {
+            let source = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!source) {
+                return response.status(404).json({
+                    message: "This income source was not found in the user's income sources."
+                })
+            }
+
+            let similarSource = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: [{
+                        userId: request.user.id,
+                        name: request.body.name,
+                        id: {
+                            [Op.ne]: request.params.id
+                        }
+                    }]
+                }
+            });
+
+            if (similarSource) {
+                return response.status(422).json({
+                    errors: ['Another income source exists with this name']
+                });
+            }
+
+            await IncomeSource.update({
+                name: request.body.name
+            }, {
+                where: {
+                    id: request.params.id
+                }
+            });
+
+            source = await source.reload();
 
             return response.status(200).json(source);
         } catch (error) {

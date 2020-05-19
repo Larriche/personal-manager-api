@@ -170,8 +170,7 @@ const wallets = {
             }
 
             await Wallet.update({
-                name: request.body.name,
-                userId: request.user.id,
+                name: request.body.name
             },{
                 where: {
                     id: request.params.id
