@@ -2,7 +2,11 @@
 
 module.exports = (sequelize, DataTypes) => {
     const Income = sequelize.define('Income', {
-        name: DataTypes.STRING
+        incomeSourceId: DataTypes.INTEGER,
+        walletId: DataTypes.INTEGER,
+        userId: DataTypes.INTEGER,
+        amount: DataTypes.DECIMAL,
+        timeReceived: DataTypes.DATE
     }, {
         tableName: 'incomes'
     });

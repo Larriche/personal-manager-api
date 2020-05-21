@@ -8,6 +8,7 @@ const auth = require('../controllers/auth');
 const wallets = require('../controllers/wallets');
 const income_sources = require('../controllers/income_sources');
 const spending_categories = require('../controllers/spending_categories');
+const incomes = require('../controllers/incomes');
 
 function routes(router) {
     router.post('/auth/register', auth.register);
@@ -33,6 +34,9 @@ function routes(router) {
     router.get('/spending_categories/:id', spending_categories.show);
     router.put('/spending_categories/:id', spending_categories.update);
     router.delete('/spending_categories/:id', spending_categories.delete);
+
+    // Incomes routes
+    router.get('/incomes', incomes.index);
 }
 
 const setupRouter = function (app) {

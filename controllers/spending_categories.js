@@ -46,7 +46,7 @@ const spendingCategories = {
 
             if (paginate) {
                 let total  = await SpendingCategory.count();
-                responseData = Utilities.setPaginationFields(request, { data: wallets }, total);
+                responseData = Utilities.setPaginationFields(request, { data: spendingCategories }, total);
             }
 
             return response.status(200).json(responseData);
