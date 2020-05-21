@@ -3,6 +3,8 @@ const config = process.env;
 const dotenv = require('dotenv').config();
 const Validator = require('validatorjs');
 const Income = require('../models').Income;
+const Wallet = require('../models').Wallet;
+const IncomeSource = require('../models').IncomeSource;
 const services = require('../services');
 const Utilities = services.Utilities;
 
@@ -58,6 +60,74 @@ const incomes = {
             }
 
             return response.status(200).json(responseData);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
+    },
+
+    /**
+     * Add an income transaction
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async store(request, response, next) {
+        try {
+            let validator = new Validator(
+                request.body, {
+                    income_source_id: 'required|numeric',
+                    wallet_id: 'required|numeric',
+                    time_received: 'required|date',
+                    amount: 'required|numeric'
+            });
+
+            if (!validator.passes()) {
+                return response.status(422).json({
+                    errors: validator.errors.all()
+                })
+            }
+
+            let wallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.wallet_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!wallet) {
+                return response.status(422).json({
+                    errors: ['The specified wallet was not found']
+                });
+            }
+
+            let incomeSource = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.income_source_id,
+                        userId: request.user.id
+                    }
+                }
+            })
+
+            if (!incomeSource) {
+                return response.status(422).json({
+                    errors: ['The specified income source was not found']
+                });
+            }
+
+            let income = await Income.create({
+                incomeSourceId: request.body.income_source_id,
+                walletId: request.body.wallet_id,
+                timeReceived: request.body.time_received,
+                userId: request.user.id,
+                amount: request.body.amount
+            });
+
+            return response.status(200).json(income);
         } catch (error) {
             error.status = 500;
             next(error);
