@@ -96,7 +96,7 @@ const spendingCategories = {
                 userId: request.user.id
             });
 
-            return response.status(200).json(source);
+            return response.status(201).json(source);
         } catch (error) {
             error.status = 500;
             next(error);
@@ -191,6 +191,37 @@ const spendingCategories = {
             category = await category.reload();
 
             return response.status(200).json(category);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
+    },
+
+    /**
+     * Delete category with given id
+     *
+     * @param {Object} r
+     */
+    async delete(request, response, next) {
+        try {
+            let category = await SpendingCategory.findOne({
+                where: {
+                    [Op.and]: {
+                        userId: request.user.id,
+                        id: request.params.id
+                    }
+                }
+            });
+
+            if (!category) {
+                return response.status(404).json({
+                    message: 'This spending category was not found'
+                });
+            }
+
+            await category.destroy();
+
+            return response.status(200).json({})
         } catch (error) {
             error.status = 500;
             next(error);

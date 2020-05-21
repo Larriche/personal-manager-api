@@ -32,6 +32,7 @@ function routes(router) {
     router.post('/spending_categories', spending_categories.store);
     router.get('/spending_categories/:id', spending_categories.show);
     router.put('/spending_categories/:id', spending_categories.update);
+    router.delete('/spending_categories/:id', spending_categories.delete);
 }
 
 const setupRouter = function (app) {
