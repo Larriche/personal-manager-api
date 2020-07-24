@@ -186,6 +186,13 @@ const wallets = {
         }
     },
 
+    /**
+     * Remove a wallet from user's wallet
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next Next callable in chain
+     */
     async delete(request, response, next) {
         try {
             let wallet = await Wallet.findOne({
