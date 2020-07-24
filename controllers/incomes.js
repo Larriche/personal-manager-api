@@ -163,6 +163,95 @@ const incomes = {
             error.status = 500;
             return next(error);
         }
+    },
+
+    /**
+     * Update an income entry
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async update(request, response, next) {
+        try {
+            let income = await Income.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.params.id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!income) {
+                return response.status(404).json({
+                    message: "This income entry was not found in the user's incomes"
+                })
+            }
+
+            let validator = new Validator(
+                request.body, {
+                    income_source_id: 'required|numeric',
+                    wallet_id: 'required|numeric',
+                    time_received: 'required|date',
+                    amount: 'required|numeric'
+            });
+
+            if (!validator.passes()) {
+                return response.status(422).json({
+                    errors: validator.errors.all()
+                });
+            }
+
+            let wallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.wallet_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!wallet) {
+                return response.status(422).json({
+                    errors: ['The specified wallet was not found']
+                });
+            }
+
+            let incomeSource = await IncomeSource.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.income_source_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!incomeSource) {
+                return response.status(422).json({
+                    errors: ['The specified income source was not found']
+                });
+             }
+
+            await Income.update({
+                incomeSourceId: request.body.income_source_id,
+                walletId: request.body.wallet_id,
+                timeReceived: request.body.time_received,
+                userId: request.user.id,
+                amount: request.body.amount
+            }, {
+                where: {
+                    id: request.params.id
+                }
+            });
+
+            income = await income.reload();
+
+            return response.status(200).json(income);
+        } catch (error) {
+            error.status = 500;
+            return next(error);
+        }
     }
 }
 
