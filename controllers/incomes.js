@@ -132,6 +132,37 @@ const incomes = {
             error.status = 500;
             next(error);
         }
+    },
+
+    /**
+     * Get an income entry by id
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {Object} next The next callable
+     */
+    async show(request, response, next) {
+        try {
+            let income = await Income.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!income) {
+                return response.status(404).json({
+                    message: "This income entry was not found in the user's income entries."
+                })
+            }
+
+            return response.status(200).json(income);
+        } catch (error) {
+            error.status = 500;
+            return next(error);
+        }
     }
 }
 
