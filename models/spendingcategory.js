@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     const SpendingCategory = sequelize.define('SpendingCategory', {
         name: DataTypes.STRING
     }, {
-        tableName: 'spending_categories'
+        tableName: 'spending_categories',
+        underscored: true
     });
 
     SpendingCategory.associate = function(models) {

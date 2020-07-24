@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         password: DataTypes.STRING
     }, {
         tableName: 'users',
+        underscored: true,
 
         hooks: {
             beforeCreate: (user) => {

@@ -2,7 +2,10 @@
 module.exports = (sequelize, DataTypes) => {
   const Expense = sequelize.define('Expense', {
     amount: DataTypes.DECIMAL
-  }, {tableName: 'expenses'});
+  }, {
+    tableName: 'expenses',
+    underscored: true
+  });
 
   Expense.associate = function(models) {
     Expense.belongsTo(models.User, {

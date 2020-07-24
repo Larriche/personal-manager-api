@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     const Wallet = sequelize.define('Wallet', {
         name: DataTypes.STRING
     }, {
-        tableName: 'wallets'
+        tableName: 'wallets',
+        underscored: true
     });
 
     Wallet.associate = function(models) {

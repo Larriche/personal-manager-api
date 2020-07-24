@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
         amount: DataTypes.DECIMAL,
         timeReceived: DataTypes.DATE
     }, {
-        tableName: 'incomes'
+        tableName: 'incomes',
+        underscored: true
     });
 
     Income.associate = function(models) {

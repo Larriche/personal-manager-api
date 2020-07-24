@@ -4,7 +4,8 @@ module.exports = (sequelize, DataTypes) => {
     const IncomeSource = sequelize.define('IncomeSource', {
         name: DataTypes.STRING
     }, {
-        tableName: 'income_sources'
+        tableName: 'income_sources',
+        underscored: true
     });
 
     IncomeSource.associate = function(models) {
