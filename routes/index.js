@@ -38,6 +38,7 @@ function routes(router) {
     // Incomes routes
     router.get('/incomes', incomes.index);
     router.post('/incomes', incomes.store);
+    router.get('/incomes/:id', incomes.show);
 }
 
 const setupRouter = function (app) {
