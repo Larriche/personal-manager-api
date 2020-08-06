@@ -14,6 +14,11 @@ module.exports = {
         type: Sequelize.STRING
       },
 
+      color: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+
       userId: {
         allowNull: false,
         type: Sequelize.INTEGER,

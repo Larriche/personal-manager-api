@@ -14,6 +14,11 @@ module.exports = {
         type: Sequelize.STRING
       },
 
+      color: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+
       balance: {
         allowNull: false,
         defaultValue: 0,
