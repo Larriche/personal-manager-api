@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
 
-      incomeSourceId: {
+      income_source_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
@@ -22,7 +22,7 @@ module.exports = {
         }
       },
 
-      walletId: {
+      wallet_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
@@ -35,7 +35,7 @@ module.exports = {
         }
       },
 
-      userId: {
+      user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
@@ -53,17 +53,17 @@ module.exports = {
         type: Sequelize.DECIMAL
       },
 
-      timeReceived: {
+      time_received: {
         allowNull: false,
         type: Sequelize.DATE
       },
 
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
 
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

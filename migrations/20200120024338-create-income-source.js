@@ -19,7 +19,7 @@ module.exports = {
         type: Sequelize.STRING
       },
 
-      userId: {
+      user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
@@ -32,12 +32,12 @@ module.exports = {
         }
       },
 
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
 
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
