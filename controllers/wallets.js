@@ -59,7 +59,8 @@ const wallets = {
      */
     async store(request, response, next) {
         let validator = new Validator(request.body, {
-            name: 'required'
+            name: 'required',
+            color: ['required', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/']
         });
 
         if (!validator.passes()) {
@@ -88,6 +89,7 @@ const wallets = {
 
             let wallet = await Wallet.create({
                 name: request.body.name,
+                color: request.body.color,
                 userId: request.user.id
             });
 
@@ -142,7 +144,8 @@ const wallets = {
      */
     async update(request, response, next) {
         let validator = new Validator(request.body, {
-            name: 'required'
+            name: 'required',
+            color: ['required', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/']
         });
 
         if (!validator.passes()) {
@@ -170,7 +173,8 @@ const wallets = {
             }
 
             await Wallet.update({
-                name: request.body.name
+                name: request.body.name,
+                color: request.body.color
             },{
                 where: {
                     id: request.params.id
