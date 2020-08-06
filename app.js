@@ -14,7 +14,12 @@ app.use(bodyParser.urlencoded({
 
 // cors
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', req.header('Origin'));
+    let origin = req.header('Origin');
+
+    if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin, X-Requested-With, Content-Type, X-Auth-Key, Datatype,Authorization, X-Socket-Id');
 
