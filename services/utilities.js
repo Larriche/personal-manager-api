@@ -47,13 +47,19 @@ const Utilities = {
         let nextPageParams = Object.assign({}, params, {
             page: currPage + 1
         });
-        let lastPageParams = Object.assign({}, params, {
+
+        let prevPageParams = Object.assign({}, params, {
             page: currPage - 1
+        });
+
+        let lastPageParams = Object.assign({}, params, {
+            page: total / perPage
         });
 
         let fullUrl = request.protocol + '://' + request.get('Host') + request.originalUrl.split("?").shift() + "?";
         let lastPageUrl = fullUrl + queryString.stringify(lastPageParams);
         let nextPageUrl = fullUrl + queryString.stringify(nextPageParams);
+        let prevPageUrl = fullUrl + queryString.stringify(prevPageParams);
 
         responseData.pagination_details = {
             per_page: perPage,
@@ -62,12 +68,18 @@ const Utilities = {
         };
 
         if (currPage > 1) {
-            responseData.pagination_details.last_page_url = lastPageUrl;
+            responseData.pagination_details.prev_page_url = prevPageUrl;
+        } else {
+            responseData.pagination_details.prev_page_url = null
         }
 
         if (total - (currPage * perPage) > 0) {
             responseData.pagination_details.next_page_url = nextPageUrl;
+        } else {
+            responseData.pagination_details.next_page_url = null;
         }
+
+        responseData.pagination_details.last_page_url = lastPageUrl;
 
         return responseData;
     }
