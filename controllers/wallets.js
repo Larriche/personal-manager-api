@@ -82,7 +82,7 @@ const wallets = {
             if (existingWallet) {
                 return response.status(422).json({
                     errors: {
-                        wallet: 'This wallet already exists'
+                        wallet: ['This wallet already exists']
                     }
                 });
             }

@@ -26,6 +26,13 @@ app.use(function (req, res, next) {
     next();
 });
 
+// reply to options requests
+app.options('*', (req, res) => {
+    res.json({
+        status: 'OK'
+    });
+});
+
 setupRoutes(app);
 
 // Handle 404s

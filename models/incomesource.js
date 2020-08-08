@@ -2,7 +2,8 @@
 
 module.exports = (sequelize, DataTypes) => {
     const IncomeSource = sequelize.define('IncomeSource', {
-        name: DataTypes.STRING
+        name: DataTypes.STRING,
+        color: DataTypes.STRING
     }, {
         tableName: 'income_sources',
         underscored: true

@@ -3,7 +3,8 @@
 module.exports = (sequelize, DataTypes) => {
     const Wallet = sequelize.define('Wallet', {
         name: DataTypes.STRING,
-        color: DataTypes.STRING
+        color: DataTypes.STRING,
+        balance: DataTypes.FLOAT
     }, {
         tableName: 'wallets',
         underscored: true
