@@ -5,6 +5,7 @@ const Validator = require('validatorjs');
 const Wallet = require('../models').Wallet;
 const services = require('../services');
 const Utilities = services.Utilities;
+const db = require('../models');
 
 const wallets = {
     /**
@@ -217,6 +218,94 @@ const wallets = {
             await wallet.destroy();
 
             return response.status(200).json({});
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
+    },
+
+    /**
+     * Transfer money from one wallet to another
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next Next callable in chain
+     */
+    async doTransfer(request, response, next) {
+        try {
+            let validator = new Validator(request.body, {
+                amount: 'required|numeric',
+                destination_id: 'required|numeric',
+                source_id: 'required|numeric'
+            });
+
+            if (!validator.passes()) {
+                return response.status(422).json({
+                    errors: validator.errors.all()
+                })
+            }
+
+            let errors = [];
+
+            let destinationWallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.destination_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            let sourceWallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.source_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!destinationWallet) {
+                errors.push('The destination wallet was not found for the user');
+            }
+
+            if (!sourceWallet) {
+                errors.push('The source wallet was not found for the user');
+            }
+
+            if (errors.length) {
+                return response.status(422).json({
+                    errors: errors
+                })
+            }
+
+            await sourceWallet.reload();
+            await destinationWallet.reload();
+
+            let sourceMoney = Number.parseFloat(sourceWallet.balance) - Number.parseFloat(request.body.amount);
+            let destinationMoney = Number.parseFloat(destinationWallet.balance) + Number.parseFloat(request.body.amount);
+
+            await db.sequelize.transaction(async (t) => {
+                await Wallet.update({
+                    balance: sourceMoney
+                }, {
+                    where: {
+                        id: request.body.source_id
+                    }
+                });
+
+                await Wallet.update({
+                    balance: destinationMoney
+                }, {
+                    where: {
+                        id: request.body.destination_id
+                    }
+                });
+            });
+
+            return response.status(200).json({
+                message: 'Transfer completed'
+            });
         } catch (error) {
             error.status = 500;
             next(error);

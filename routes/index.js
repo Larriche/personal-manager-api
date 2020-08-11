@@ -20,6 +20,7 @@ function routes(router) {
     router.get('/wallets/:id', wallets.show);
     router.put('/wallets/:id', wallets.update);
     router.delete('/wallets/:id', wallets.delete);
+    router.post('/wallets/transfer', wallets.doTransfer);
 
     // Income sources routes
     router.get('/income_sources', income_sources.index);
