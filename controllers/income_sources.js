@@ -61,7 +61,8 @@ const incomeSources = {
      */
     async store(request, response, next) {
         let validator = new Validator(request.body, {
-            name: 'required'
+            name: 'required',
+            color: ['required', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/']
         });
 
         if (!validator.passes()) {
@@ -88,7 +89,8 @@ const incomeSources = {
 
             let source = await IncomeSource.create({
                 name: request.body.name,
-                userId: request.user.id
+                userId: request.user.id,
+                color: request.body.color
             });
 
             return response.status(200).json(source);

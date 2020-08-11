@@ -2,7 +2,8 @@
 
 module.exports = (sequelize, DataTypes) => {
     const SpendingCategory = sequelize.define('SpendingCategory', {
-        name: DataTypes.STRING
+        name: DataTypes.STRING,
+        color: DataTypes.STRING
     }, {
         tableName: 'spending_categories',
         underscored: true

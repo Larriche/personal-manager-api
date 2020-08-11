@@ -66,7 +66,8 @@ const spendingCategories = {
      */
     async store(request, response, next) {
         let validator = new Validator(request.body, {
-            name: 'required'
+            name: 'required',
+            color: ['required', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/']
         });
 
         if (!validator.passes()) {
@@ -93,7 +94,8 @@ const spendingCategories = {
 
             let source = await SpendingCategory.create({
                 name: request.body.name,
-                userId: request.user.id
+                userId: request.user.id,
+                color: request.body.color
             });
 
             return response.status(201).json(source);
@@ -181,7 +183,8 @@ const spendingCategories = {
             }
 
             await SpendingCategory.update({
-                name: request.body.name
+                name: request.body.name,
+                color: request.body.color
             }, {
                 where: {
                     id: request.params.id
