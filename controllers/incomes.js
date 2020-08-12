@@ -41,7 +41,14 @@ const incomes = {
                 },
                 order: [
                     [orderBy, ranking]
-                ]
+                ],
+                include: [{
+                    model: Wallet,
+                    as: 'wallet'
+                },{
+                    model: IncomeSource,
+                    as: 'income_source'
+                }]
             };
 
             if (paginate) {
