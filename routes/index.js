@@ -41,6 +41,7 @@ function routes(router) {
     router.post('/incomes', incomes.store);
     router.get('/incomes/:id', incomes.show);
     router.put('/incomes/:id', incomes.update);
+    router.delete('/incomes/:id', incomes.delete);
 }
 
 const setupRouter = function (app) {

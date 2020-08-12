@@ -259,7 +259,40 @@ const incomes = {
             error.status = 500;
             return next(error);
         }
-    }
+    },
+
+    /**
+     * Remove an income record
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next Next callable in chain
+     */
+    async delete(request, response, next) {
+        try {
+            let income = await Income.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!income) {
+                return response.status(404).json({
+                    message: "This income record was not found"
+                });
+            }
+
+            await income.destroy();
+
+            return response.status(200).json({});
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
+    },
 }
 
 module.exports = incomes;
