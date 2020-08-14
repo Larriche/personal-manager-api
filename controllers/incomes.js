@@ -228,7 +228,7 @@ const incomes = {
                 });
             }
 
-            let wallet = await Wallet.findOne({
+            let newWallet = await Wallet.findOne({
                 where: {
                     [Op.and]: {
                         id: request.body.wallet_id,
@@ -237,7 +237,7 @@ const incomes = {
                 }
             });
 
-            if (!wallet) {
+            if (!newWallet) {
                 return response.status(422).json({
                     errors: ['The specified wallet was not found']
                 });
@@ -262,15 +262,26 @@ const incomes = {
                 let currentAmount = Number.parseFloat(income.amount);
                 let newAmount = Number.parseFloat(request.body.amount);
                 let walletBalance;
+                let wallet;
 
-                await wallet.reload();
+                if (income.walletId == request.body.wallet_id) {
+                    wallet = newWallet;
 
-                if (newAmount > currentAmount) {
-                    walletBalance = Number.parseFloat(wallet.balance) + (newAmount - currentAmount);
-                } else if (newAmount == currentAmount) {
-                    walletBalance = Number.parseFloat(wallet.balance);
+                    if (newAmount > currentAmount) {
+                        walletBalance = Number.parseFloat(wallet.balance) + (newAmount - currentAmount);
+                    } else if (newAmount == currentAmount) {
+                        walletBalance = Number.parseFloat(wallet.balance);
+                    } else {
+                        walletBalance = Number.parseFloat(wallet.balance) - (currentAmount - newAmount);
+                    }
                 } else {
-                    walletBalance = Number.parseFloat(wallet.balance) - (currentAmount - newAmount);
+                    wallet = await Wallet.findOne({
+                        where: {
+                            id: income.walletId
+                        }
+                    });
+
+                    walletBalance = Number.parseFloat(wallet.balance) - Number.parseFloat(income.amount);
                 }
 
                 await Income.update({
@@ -289,11 +300,22 @@ const incomes = {
                     balance: walletBalance
                 }, {
                     where: {
-                        id: request.body.wallet_id
+                        id: income.walletId
                     }
                 });
-            });
 
+                if (income.walletId != request.body.wallet_id) {
+                    walletBalance = Number.parseFloat(newWallet.balance) + Number.parseFloat(request.body.amount);
+
+                    await Wallet.update({
+                        balance: walletBalance
+                    }, {
+                        where: {
+                            id: request.body.wallet_id
+                        }
+                    });
+                }
+            });
 
             income = await income.reload();
 
