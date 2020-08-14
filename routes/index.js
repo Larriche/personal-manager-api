@@ -47,7 +47,7 @@ function routes(router) {
     // Expenses routes
     router.get('/expenses', expenses.index);
     router.post('/expenses', expenses.store);
-    //router.get('/expenses/:id', expenses.show);
+    router.get('/expenses/:id', expenses.show);
     //router.put('/expenses/:id', expenses.update);
     //router.delete('/expenses/:id', expenses.delete);
 }

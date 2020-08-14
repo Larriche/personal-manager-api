@@ -158,6 +158,37 @@ const expenses = {
             error.status = 500;
             next(error);
         }
+    },
+
+    /**
+     * Get an expense log by id
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next The next callable
+     */
+    async show(request, response, next) {
+        try {
+            let expense = await Expense.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!expense) {
+                return response.status(404).json({
+                    message: "This expense entry was not found in the user's expense entries."
+                })
+            }
+
+            return response.status(200).json(expense);
+         } catch (error) {
+             error.status = 500;
+             return next(error);
+         }
     }
 }
 
