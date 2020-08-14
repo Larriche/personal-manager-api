@@ -1,7 +1,12 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Expense = sequelize.define('Expense', {
-    amount: DataTypes.DECIMAL
+    amount: DataTypes.DECIMAL,
+    spendingCategoryId: DataTypes.INTEGER,
+    walletId: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
+    amount: DataTypes.DECIMAL,
+    timeMade: DataTypes.DATE
   }, {
     tableName: 'expenses',
     underscored: true
