@@ -49,7 +49,7 @@ function routes(router) {
     router.post('/expenses', expenses.store);
     router.get('/expenses/:id', expenses.show);
     router.put('/expenses/:id', expenses.update);
-    //router.delete('/expenses/:id', expenses.delete);
+    router.delete('/expenses/:id', expenses.delete);
 }
 
 const setupRouter = function (app) {

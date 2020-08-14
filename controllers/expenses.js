@@ -309,7 +309,69 @@ const expenses = {
             error.status = 500;
             next(error);
         }
-    }
+    },
+
+    /**
+     * Delete the given expense log
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next The next callabe
+     */
+    async delete(request, response, next) {
+
+    },
+
+    /**
+     * Remove an income record
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next Next callable in chain
+     */
+    async delete(request, response, next) {
+        try {
+            let expense = await Expense.findOne({
+                where: {
+                    [Op.and]: [{
+                        id: request.params.id,
+                        userId: request.user.id
+                    }]
+                }
+            });
+
+            if (!expense) {
+                return response.status(404).json({
+                    message: "This expense record was not found"
+                });
+            }
+
+            await db.sequelize.transaction(async (t) => {
+                let wallet = await Wallet.findOne({
+                    where: {
+                        id: expense.walletId
+                    }
+                });
+
+                let walletBalance = Number.parseFloat(wallet.balance) - Number.parseFloat(expense.amount);
+
+                await expense.destroy();
+
+                await Wallet.update({
+                    balance: walletBalance
+                }, {
+                    where: {
+                        id: expense.walletId
+                    }
+                });
+            });
+
+            return response.status(200).json({});
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
+    },
 }
 
 module.exports = expenses;
