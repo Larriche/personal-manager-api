@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
         walletId: DataTypes.INTEGER,
         userId: DataTypes.INTEGER,
         amount: DataTypes.DECIMAL,
-        timeReceived: DataTypes.DATE
+        timeReceived: DataTypes.DATE,
+        description: DataTypes.TEXT
     }, {
         tableName: 'incomes',
         underscored: true

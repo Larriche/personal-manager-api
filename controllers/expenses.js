@@ -137,6 +137,7 @@ const expenses = {
                     walletId: request.body.wallet_id,
                     timeMade: request.body.time_made,
                     userId: request.user.id,
+                    description: request.body.description,
                     amount: request.body.amount
                 });
 
@@ -297,7 +298,8 @@ const expenses = {
                     walletId: request.body.wallet_id,
                     timeMade: request.body.time_made,
                     userId: request.user.id,
-                    amount: request.body.amount
+                    amount: request.body.amount,
+                    description: request.body.description
                 }, {
                     where: {
                         id: request.params.id

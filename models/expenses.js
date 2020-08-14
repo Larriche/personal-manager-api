@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     spendingCategoryId: DataTypes.INTEGER,
     walletId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
-    amount: DataTypes.DECIMAL,
+    description: DataTypes.TEXT,
     timeMade: DataTypes.DATE
   }, {
     tableName: 'expenses',

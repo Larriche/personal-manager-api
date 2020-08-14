@@ -135,7 +135,8 @@ const incomes = {
                     walletId: request.body.wallet_id,
                     timeReceived: request.body.time_received,
                     userId: request.user.id,
-                    amount: request.body.amount
+                    amount: request.body.amount,
+                    description: request.body.description
                 });
 
                 await wallet.reload();
@@ -289,7 +290,8 @@ const incomes = {
                     walletId: request.body.wallet_id,
                     timeReceived: request.body.time_received,
                     userId: request.user.id,
-                    amount: request.body.amount
+                    amount: request.body.amount,
+                    description: request.body.description
                 }, {
                     where: {
                         id: request.params.id

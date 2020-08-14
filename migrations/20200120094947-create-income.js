@@ -53,6 +53,11 @@ module.exports = {
         type: Sequelize.DECIMAL
       },
 
+      description: {
+        allowNull: true,
+        type: Sequelize.TEXT
+      },
+
       time_received: {
         allowNull: false,
         type: Sequelize.DATE
