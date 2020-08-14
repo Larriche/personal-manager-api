@@ -7,6 +7,7 @@ const Wallet = require('../models').Wallet;
 const IncomeSource = require('../models').IncomeSource;
 const services = require('../services');
 const Utilities = services.Utilities;
+const db = require('../models');
 
 const incomes = {
     /**
@@ -126,13 +127,30 @@ const incomes = {
                 });
             }
 
-            let income = await Income.create({
-                incomeSourceId: request.body.income_source_id,
-                walletId: request.body.wallet_id,
-                timeReceived: request.body.time_received,
-                userId: request.user.id,
-                amount: request.body.amount
+            let income;
+
+            await db.sequelize.transaction(async (t) => {
+                income = await Income.create({
+                    incomeSourceId: request.body.income_source_id,
+                    walletId: request.body.wallet_id,
+                    timeReceived: request.body.time_received,
+                    userId: request.user.id,
+                    amount: request.body.amount
+                });
+
+                await wallet.reload();
+
+                let walletBalance = Number.parseFloat(wallet.balance) + Number.parseFloat(request.body.amount);
+
+                await Wallet.update({
+                    balance: walletBalance
+                }, {
+                    where: {
+                        id: request.body.wallet_id
+                    }
+                });
             });
+
 
             return response.status(200).json(income);
         } catch (error) {
@@ -238,19 +256,44 @@ const incomes = {
                 return response.status(422).json({
                     errors: ['The specified income source was not found']
                 });
-             }
+            }
 
-            await Income.update({
-                incomeSourceId: request.body.income_source_id,
-                walletId: request.body.wallet_id,
-                timeReceived: request.body.time_received,
-                userId: request.user.id,
-                amount: request.body.amount
-            }, {
-                where: {
-                    id: request.params.id
+            await db.sequelize.transaction(async (t) => {
+                let currentAmount = Number.parseFloat(income.amount);
+                let newAmount = Number.parseFloat(request.body.amount);
+                let walletBalance;
+
+                await wallet.reload();
+
+                if (newAmount > currentAmount) {
+                    walletBalance = Number.parseFloat(wallet.balance) + (newAmount - currentAmount);
+                } else if (newAmount == currentAmount) {
+                    walletBalance = Number.parseFloat(wallet.balance);
+                } else {
+                    walletBalance = Number.parseFloat(wallet.balance) - (currentAmount - newAmount);
                 }
+
+                await Income.update({
+                    incomeSourceId: request.body.income_source_id,
+                    walletId: request.body.wallet_id,
+                    timeReceived: request.body.time_received,
+                    userId: request.user.id,
+                    amount: request.body.amount
+                }, {
+                    where: {
+                        id: request.params.id
+                    }
+                });
+
+                await Wallet.update({
+                    balance: walletBalance
+                }, {
+                    where: {
+                        id: request.body.wallet_id
+                    }
+                });
             });
+
 
             income = await income.reload();
 
@@ -285,7 +328,25 @@ const incomes = {
                 });
             }
 
-            await income.destroy();
+            await db.sequelize.transaction(async (t) => {
+                let wallet = await Wallet.findOne({
+                    where: {
+                        id: income.walletId
+                    }
+                });
+
+                let walletBalance = Number.parseFloat(wallet.balance) - Number.parseFloat(income.amount);
+
+                await income.destroy();
+
+                await Wallet.update({
+                    balance: walletBalance
+                }, {
+                    where: {
+                        id: income.walletId
+                    }
+                });
+            });
 
             return response.status(200).json({});
         } catch (error) {
