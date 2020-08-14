@@ -175,7 +175,14 @@ const expenses = {
                         id: request.params.id,
                         userId: request.user.id
                     }]
-                }
+                },
+                include: [{
+                    model: Wallet,
+                    as: 'wallet'
+                }, {
+                    model: SpendingCategory,
+                    as: 'spending_category'
+                }]
             });
 
             if (!expense) {
@@ -189,6 +196,119 @@ const expenses = {
              error.status = 500;
              return next(error);
          }
+    },
+
+    /**
+     * Update the given expense log
+     *
+     * @param {Object} request The HTTP request
+     * @param {Object} response The HTTP response
+     * @param {*} next The next callable
+     */
+    async update(request, response, next) {
+        try {
+            let expense = await Expense.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.params.id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!expense) {
+                return response.status(404).json({
+                    message: "This expense entry was not found in the user's expenses"
+                })
+            }
+
+             let validator = new Validator(
+                request.body, {
+                    spending_category_id: 'required|numeric',
+                    wallet_id: 'required|numeric',
+                    time_made: 'required|date',
+                    amount: 'required|numeric'
+            });
+
+            if (!validator.passes()) {
+                return response.status(422).json({
+                    errors: validator.errors.all()
+                });
+            }
+
+            let wallet = await Wallet.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.wallet_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!wallet) {
+                return response.status(422).json({
+                    errors: ['The specified wallet was not found']
+                });
+            }
+
+            let spendingCategory = await SpendingCategory.findOne({
+                where: {
+                    [Op.and]: {
+                        id: request.body.spending_category_id,
+                        userId: request.user.id
+                    }
+                }
+            });
+
+            if (!spendingCategory) {
+                return response.status(422).json({
+                    errors: ['The specified spending category was not found']
+                });
+            }
+
+            await db.sequelize.transaction(async (t) => {
+                let currentAmount = Number.parseFloat(expense.amount);
+                let newAmount = Number.parseFloat(request.body.amount);
+                let walletBalance;
+
+                await wallet.reload();
+
+                if (newAmount > currentAmount) {
+                    walletBalance = Number.parseFloat(wallet.balance) - (newAmount - currentAmount);
+                } else if (newAmount == currentAmount) {
+                    walletBalance = Number.parseFloat(wallet.balance);
+                } else {
+                    walletBalance = Number.parseFloat(wallet.balance) + (currentAmount - newAmount);
+                }
+
+                await Expense.update({
+                    spendingCategoryId: request.body.spending_category_id,
+                    walletId: request.body.wallet_id,
+                    timeMade: request.body.time_made,
+                    userId: request.user.id,
+                    amount: request.body.amount
+                }, {
+                    where: {
+                        id: request.params.id
+                    }
+                });
+
+                await Wallet.update({
+                    balance: walletBalance
+                }, {
+                    where: {
+                        id: request.body.wallet_id
+                    }
+                });
+            });
+
+            expense = await expense.reload();
+
+            return response.status(200).json(expense);
+        } catch (error) {
+            error.status = 500;
+            next(error);
+        }
     }
 }
 
