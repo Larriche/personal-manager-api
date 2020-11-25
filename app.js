@@ -54,3 +54,5 @@ app.use(function (err, req, res, next) {
 http.listen(port, function () {
     console.log('Express server is listening on port', port);
 });
+
+module.exports = app;
