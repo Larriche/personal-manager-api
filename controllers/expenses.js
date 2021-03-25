@@ -131,7 +131,7 @@ const expenses = {
 
             let expense;
 
-            await db.sequelize.transaction(async (t) => {
+            await db.sequelize.transaction(async (transaction) => {
                 expense = await Expense.create({
                     spendingCategoryId: request.body.spending_category_id,
                     walletId: request.body.wallet_id,
@@ -139,6 +139,8 @@ const expenses = {
                     userId: request.user.id,
                     description: request.body.description,
                     amount: request.body.amount
+                }, {
+                    transaction
                 });
 
                 await wallet.reload();
@@ -150,7 +152,8 @@ const expenses = {
                 }, {
                     where: {
                         id: request.body.wallet_id
-                    }
+                    },
+                    transaction
                 });
             });
 

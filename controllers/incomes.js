@@ -129,7 +129,7 @@ const incomes = {
 
             let income;
 
-            await db.sequelize.transaction(async (t) => {
+            await db.sequelize.transaction(async (transaction) => {
                 income = await Income.create({
                     incomeSourceId: request.body.income_source_id,
                     walletId: request.body.wallet_id,
@@ -137,6 +137,8 @@ const incomes = {
                     userId: request.user.id,
                     amount: request.body.amount,
                     description: request.body.description
+                }, {
+                    transaction
                 });
 
                 await wallet.reload();
@@ -148,7 +150,8 @@ const incomes = {
                 }, {
                     where: {
                         id: request.body.wallet_id
-                    }
+                    },
+                    transaction
                 });
             });
 
