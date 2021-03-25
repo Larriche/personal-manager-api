@@ -3,6 +3,10 @@ const config = process.env;
 const dotenv = require('dotenv').config();
 const Validator = require('validatorjs');
 const Wallet = require('../models').Wallet;
+const Income = require('../models').Income;
+const Expense = require('../models').Expense;
+const IncomeSource = require('../models').IncomeSource;
+const SpendingCategory = require('../models').SpendingCategory;
 const services = require('../services');
 const Utilities = services.Utilities;
 const db = require('../models');
@@ -285,21 +289,69 @@ const wallets = {
             let sourceMoney = Number.parseFloat(sourceWallet.balance) - Number.parseFloat(request.body.amount);
             let destinationMoney = Number.parseFloat(destinationWallet.balance) + Number.parseFloat(request.body.amount);
 
-            await db.sequelize.transaction(async (t) => {
+            await db.sequelize.transaction(async (transaction) => {
+                // Update source wallet balance
                 await Wallet.update({
                     balance: sourceMoney
                 }, {
                     where: {
                         id: request.body.source_id
-                    }
+                    },
+                    transaction
                 });
 
+                // Update destination wallet balance
                 await Wallet.update({
                     balance: destinationMoney
                 }, {
                     where: {
                         id: request.body.destination_id
+                    },
+                    transaction
+                });
+
+                // Create an expenses entry
+                let transferCategory = await SpendingCategory.findOne({
+                    where: {
+                        name: 'Transfers'
                     }
+                });
+
+                if (!transferCategory) {
+                    throw new Error('Transfers expense category not found');
+                }
+
+                expense = await Expense.create({
+                    spendingCategoryId: transferCategory.id,
+                    walletId: request.body.source_id,
+                    timeMade: new Date(),
+                    userId: request.user.id,
+                    description: `Transfer to ${sourceWallet.name}`,
+                    amount: request.body.amount
+                }, {
+                    transaction
+                });
+
+                // Create an income entry
+                transferCategory = await IncomeSource.findOne({
+                    where: {
+                        name: 'Transfers'
+                    }
+                });
+
+                if (!transferCategory) {
+                    throw new Error('Transfers income category not found')
+                }
+
+                income = await Income.create({
+                    incomeSourceId: transferCategory.id,
+                    walletId: request.body.destination_id,
+                    timeReceived: new Date(),
+                    userId: request.user.id,
+                    amount: request.body.amount,
+                    description: `Transfer from ${sourceWallet.name}`
+                }, {
+                    transaction
                 });
             });
 

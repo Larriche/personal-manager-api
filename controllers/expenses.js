@@ -337,18 +337,7 @@ const expenses = {
     },
 
     /**
-     * Delete the given expense log
-     *
-     * @param {Object} request The HTTP request
-     * @param {Object} response The HTTP response
-     * @param {*} next The next callabe
-     */
-    async delete(request, response, next) {
-
-    },
-
-    /**
-     * Remove an income record
+     * Remove an expense record
      *
      * @param {Object} request The HTTP request
      * @param {Object} response The HTTP response
